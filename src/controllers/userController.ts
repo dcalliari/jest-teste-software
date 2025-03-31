@@ -1,6 +1,12 @@
 import type { Request, Response } from "express";
+import {
+	getAllUsers,
+	getUserById,
+	createUser,
+	updateUser,
+	deleteUser,
+} from "../utils/mockData";
 
-// Controlador para a rota de boas-vindas
 export class UserController {
 	// Controlador para a rota de boas-vindas
 	public getWelcome(req: Request, res: Response): void {
@@ -10,36 +16,69 @@ export class UserController {
 	// Controlador para listar usuários com filtros
 	public getUsers(req: Request, res: Response): void {
 		const { name, age } = req.query;
-		res
-			.status(200)
-			.json({ message: "Usuários filtrados", filters: { name, age } });
+		let users = getAllUsers();
+
+		if (name) {
+			users = users.filter((user) => user.name.includes(name as string));
+		}
+
+		if (age) {
+			users = users.filter((user) => user.age === Number(age));
+		}
+
+		res.status(200).json({ message: "Usuários filtrados", users });
 	}
 
 	// Controlador para buscar um usuário por ID
 	public getUserById(req: Request, res: Response): void {
 		const { id } = req.params;
-		res.status(200).json({ message: `Usuário com ID ${id}` });
+		const user = getUserById(id);
+		if (!user) {
+			res.status(400).json({ error: "ID inválido" });
+			return;
+		}
+		res.status(200).json({ message: `Usuário com ID ${id}`, user });
 	}
 
 	// Controlador para criar um novo usuário
 	public createUser(req: Request, res: Response): void {
 		const { name, age } = req.body;
-		res.status(201).json({ message: "Usuário criado", user: { name, age } });
+		if (!name || !age) {
+			res.status(400).json({ error: "Dados do usuário são obrigatórios" });
+			return;
+		}
+		const newUser = createUser(name, age);
+		res.status(201).json({ message: "Usuário criado", user: newUser });
 	}
 
 	// Controlador para atualizar um usuário por ID
 	public updateUser(req: Request, res: Response): void {
 		const { id } = req.params;
 		const { name, age } = req.body;
-		res.status(200).json({
-			message: `Usuário com ID ${id} atualizado`,
-			user: { name, age },
-		});
+		if (!name || !age) {
+			res
+				.status(400)
+				.json({ error: "Dados para atualização são obrigatórios" });
+			return;
+		}
+		const updatedUser = updateUser(id, name, age);
+		if (!updatedUser) {
+			res.status(400).json({ error: "ID inválido" });
+			return;
+		}
+		res
+			.status(200)
+			.json({ message: `Usuário com ID ${id} atualizado`, user: updatedUser });
 	}
 
 	// Controlador para deletar um usuário por ID
 	public deleteUser(req: Request, res: Response): void {
 		const { id } = req.params;
+		const success = deleteUser(id);
+		if (!success) {
+			res.status(400).json({ error: "ID inválido" });
+			return;
+		}
 		res.status(200).json({ message: `Usuário com ID ${id} deletado` });
 	}
 

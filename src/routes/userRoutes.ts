@@ -6,17 +6,6 @@ const controller = new UserController();
 
 /**
  * @swagger
- * /:
- *   get:
- *     summary: Retorna mensagem de boas-vindas
- *     responses:
- *       200:
- *         description: Sucesso
- */
-router.get("/", controller.getWelcome);
-
-/**
- * @swagger
  * /users:
  *   get:
  *     summary: Lista usuários com filtros

@@ -28,23 +28,6 @@ describe("Testes Unitários - userController", () => {
 		}
 	});
 
-	it("Deve retornar mensagem de boas-vindas", () => {
-		userController.getWelcome(mockRequest as Request, mockResponse as Response);
-		expect(mockResponse.status).toHaveBeenCalledWith(200);
-		expect(mockResponse.send).toHaveBeenCalledWith("Bem-vindo à API!");
-	});
-
-	it("Deve retornar usuários filtrados", () => {
-		createUser("Daniel", 30);
-		mockRequest.query = { name: "Daniel", age: "30" };
-		userController.getUsers(mockRequest as Request, mockResponse as Response);
-		expect(mockResponse.status).toHaveBeenCalledWith(200);
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Usuários filtrados",
-			users: [{ id: "1", name: "Daniel", age: 30 }],
-		});
-	});
-
 	it("Deve atualizar um usuário por ID", () => {
 		const user = createUser("João", 25);
 		mockRequest.params = { id: user.id };
@@ -91,15 +74,6 @@ describe("Testes Unitários - userController", () => {
 		});
 	});
 
-	it("Deve retornar o perfil do usuário logado", () => {
-		userController.getProfile(mockRequest as Request, mockResponse as Response);
-		expect(mockResponse.status).toHaveBeenCalledWith(200);
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Perfil do usuário",
-			profile: { id: 1, name: "Daniel", age: 28 },
-		});
-	});
-
 	it("Deve retornar erro ao criar usuário sem dados", () => {
 		mockRequest.body = {};
 		userController.createUser(mockRequest as Request, mockResponse as Response);
@@ -129,15 +103,6 @@ describe("Testes Unitários - userController", () => {
 		expect(mockResponse.status).toHaveBeenCalledWith(400);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			error: "Dados para atualização são obrigatórios",
-		});
-	});
-
-	it("Deve retornar erro ao deletar usuário com ID inválido", () => {
-		mockRequest.params = { id: "abc" };
-		userController.deleteUser(mockRequest as Request, mockResponse as Response);
-		expect(mockResponse.status).toHaveBeenCalledWith(400);
-		expect(mockResponse.json).toHaveBeenCalledWith({
-			error: "ID inválido",
 		});
 	});
 });

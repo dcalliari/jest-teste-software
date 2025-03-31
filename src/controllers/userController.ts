@@ -8,11 +8,6 @@ import {
 } from "../utils/mockData";
 
 export class UserController {
-	// Controlador para a rota de boas-vindas
-	public getWelcome(req: Request, res: Response): void {
-		res.status(200).send("Bem-vindo à API!");
-	}
-
 	// Controlador para listar usuários com filtros
 	public getUsers(req: Request, res: Response): void {
 		const { name, age } = req.query;

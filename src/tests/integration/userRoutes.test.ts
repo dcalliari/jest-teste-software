@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../app";
+import { getAllUsers, createUser, deleteUser } from "../../utils/mockData";
 
 describe("Testes de Integração - Rotas de Usuários", () => {
 	it("Deve retornar mensagem de boas-vindas", async () => {
@@ -15,7 +16,14 @@ describe("Testes de Integração - Rotas de Usuários", () => {
 		expect(response.status).toBe(201);
 		expect(response.body).toEqual({
 			message: "Usuário criado",
-			user: { name: "Daniel", age: 30 },
+			user: { id: expect.any(String), name: "Daniel", age: 30 },
+		});
+
+		const users = getAllUsers();
+		expect(users).toContainEqual({
+			id: response.body.user.id,
+			name: "Daniel",
+			age: 30,
 		});
 	});
 
@@ -28,10 +36,12 @@ describe("Testes de Integração - Rotas de Usuários", () => {
 	});
 
 	it("Deve retornar usuário por ID", async () => {
-		const response = await request(app).get("/api/users/123");
+		const user = createUser("Test User", 25);
+		const response = await request(app).get(`/api/users/${user.id}`);
 		expect(response.status).toBe(200);
 		expect(response.body).toEqual({
-			message: "Usuário com ID 123",
+			message: `Usuário com ID ${user.id}`,
+			user,
 		});
 	});
 
@@ -52,18 +62,20 @@ describe("Testes de Integração - Rotas de Usuários", () => {
 	});
 
 	it("Deve atualizar um usuário por ID", async () => {
+		const user = createUser("Test User", 25);
 		const response = await request(app)
-			.put("/api/users/123")
+			.put(`/api/users/${user.id}`)
 			.send({ name: "João", age: 35 });
 		expect(response.status).toBe(200);
 		expect(response.body).toEqual({
-			message: "Usuário com ID 123 atualizado",
-			user: { name: "João", age: 35 },
+			message: `Usuário com ID ${user.id} atualizado`,
+			user: { id: user.id, name: "João", age: 35 },
 		});
 	});
 
 	it("Deve retornar erro ao atualizar usuário sem dados", async () => {
-		const response = await request(app).put("/api/users/123").send({});
+		const user = createUser("Test User", 25);
+		const response = await request(app).put(`/api/users/${user.id}`).send({});
 		expect(response.status).toBe(400);
 		expect(response.body).toEqual({
 			error: "Dados para atualização são obrigatórios",
@@ -71,11 +83,15 @@ describe("Testes de Integração - Rotas de Usuários", () => {
 	});
 
 	it("Deve deletar um usuário por ID", async () => {
-		const response = await request(app).delete("/api/users/123");
+		const user = createUser("Test User", 25);
+		const response = await request(app).delete(`/api/users/${user.id}`);
 		expect(response.status).toBe(200);
 		expect(response.body).toEqual({
-			message: "Usuário com ID 123 deletado",
+			message: `Usuário com ID ${user.id} deletado`,
 		});
+
+		const users = getAllUsers();
+		expect(users).not.toContainEqual(user);
 	});
 
 	it("Deve retornar erro ao deletar usuário com ID inválido", async () => {
@@ -111,7 +127,7 @@ describe("Testes de Integração - Rotas de Usuários", () => {
 		expect(response.status).toBe(200);
 		expect(response.body).toEqual({
 			message: "Perfil do usuário",
-			profile: { id: 1, name: "Daniel", age: 30 },
+			profile: { id: 1, name: "Daniel", age: 28 },
 		});
 	});
 });

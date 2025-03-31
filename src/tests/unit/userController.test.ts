@@ -1,55 +1,78 @@
 import type { Request, Response } from "express";
 import { UserController } from "../../controllers/userController";
+import {
+	getAllUsers,
+	createUser,
+	deleteUser,
+	updateUser,
+} from "../../utils/mockData";
 
 const userController = new UserController();
 
 describe("Testes Unitários - userController", () => {
-	const mockRequest = {} as Request;
-	const mockResponse = {
-		status: jest.fn().mockReturnThis(),
-		send: jest.fn(),
-		json: jest.fn(),
-	} as unknown as Response;
+	let mockRequest: Partial<Request>;
+	let mockResponse: Partial<Response>;
+
+	beforeEach(() => {
+		mockRequest = {};
+		mockResponse = {
+			status: jest.fn().mockReturnThis(),
+			send: jest.fn(),
+			json: jest.fn(),
+		};
+	});
+
+	afterEach(() => {
+		while (getAllUsers().length > 0) {
+			deleteUser(getAllUsers()[0].id);
+		}
+	});
 
 	it("Deve retornar mensagem de boas-vindas", () => {
-		userController.getWelcome(mockRequest, mockResponse);
+		userController.getWelcome(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(200);
 		expect(mockResponse.send).toHaveBeenCalledWith("Bem-vindo à API!");
 	});
 
 	it("Deve retornar usuários filtrados", () => {
+		createUser("Daniel", 30);
 		mockRequest.query = { name: "Daniel", age: "30" };
-		userController.getUsers(mockRequest, mockResponse);
+		userController.getUsers(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(200);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			message: "Usuários filtrados",
-			filters: { name: "Daniel", age: "30" },
+			users: [{ id: "1", name: "Daniel", age: 30 }],
 		});
 	});
 
 	it("Deve atualizar um usuário por ID", () => {
-		mockRequest.params = { id: "123" };
-		mockRequest.body = { name: "João", age: 26 };
-		userController.updateUser(mockRequest, mockResponse);
+		const user = createUser("João", 25);
+		mockRequest.params = { id: user.id };
+		mockRequest.body = { name: "João Atualizado", age: 26 };
+		userController.updateUser(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(200);
 		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Usuário com ID 123 atualizado",
-			user: { name: "João", age: 26 },
+			message: `Usuário com ID ${user.id} atualizado`,
+			user: { id: user.id, name: "João Atualizado", age: 26 },
 		});
 	});
 
 	it("Deve deletar um usuário por ID", () => {
-		mockRequest.params = { id: "123" };
-		userController.deleteUser(mockRequest, mockResponse);
+		const user = createUser("João", 25);
+		mockRequest.params = { id: user.id };
+		userController.deleteUser(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(200);
 		expect(mockResponse.json).toHaveBeenCalledWith({
-			message: "Usuário com ID 123 deletado",
+			message: `Usuário com ID ${user.id} deletado`,
 		});
 	});
 
 	it("Deve autenticar um usuário com sucesso", () => {
 		mockRequest.body = { username: "admin", password: "1234" };
-		userController.authenticateUser(mockRequest, mockResponse);
+		userController.authenticateUser(
+			mockRequest as Request,
+			mockResponse as Response,
+		);
 		expect(mockResponse.status).toHaveBeenCalledWith(200);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			message: "Autenticação bem-sucedida",
@@ -58,7 +81,10 @@ describe("Testes Unitários - userController", () => {
 
 	it("Deve falhar na autenticação com credenciais inválidas", () => {
 		mockRequest.body = { username: "user", password: "wrongpassword" };
-		userController.authenticateUser(mockRequest, mockResponse);
+		userController.authenticateUser(
+			mockRequest as Request,
+			mockResponse as Response,
+		);
 		expect(mockResponse.status).toHaveBeenCalledWith(401);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			message: "Credenciais inválidas",
@@ -66,17 +92,17 @@ describe("Testes Unitários - userController", () => {
 	});
 
 	it("Deve retornar o perfil do usuário logado", () => {
-		userController.getProfile(mockRequest, mockResponse);
+		userController.getProfile(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(200);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			message: "Perfil do usuário",
-			profile: { id: 1, name: "Daniel", age: 30 },
+			profile: { id: 1, name: "Daniel", age: 28 },
 		});
 	});
 
 	it("Deve retornar erro ao criar usuário sem dados", () => {
 		mockRequest.body = {};
-		userController.createUser(mockRequest, mockResponse);
+		userController.createUser(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(400);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			error: "Dados do usuário são obrigatórios",
@@ -85,7 +111,10 @@ describe("Testes Unitários - userController", () => {
 
 	it("Deve retornar erro ao buscar usuário com ID inválido", () => {
 		mockRequest.params = { id: "abc" };
-		userController.getUserById(mockRequest, mockResponse);
+		userController.getUserById(
+			mockRequest as Request,
+			mockResponse as Response,
+		);
 		expect(mockResponse.status).toHaveBeenCalledWith(400);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			error: "ID inválido",
@@ -93,9 +122,10 @@ describe("Testes Unitários - userController", () => {
 	});
 
 	it("Deve retornar erro ao atualizar usuário sem dados", () => {
-		mockRequest.params = { id: "123" };
+		const user = createUser("João", 25);
+		mockRequest.params = { id: user.id };
 		mockRequest.body = {};
-		userController.updateUser(mockRequest, mockResponse);
+		userController.updateUser(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(400);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			error: "Dados para atualização são obrigatórios",
@@ -104,7 +134,7 @@ describe("Testes Unitários - userController", () => {
 
 	it("Deve retornar erro ao deletar usuário com ID inválido", () => {
 		mockRequest.params = { id: "abc" };
-		userController.deleteUser(mockRequest, mockResponse);
+		userController.deleteUser(mockRequest as Request, mockResponse as Response);
 		expect(mockResponse.status).toHaveBeenCalledWith(400);
 		expect(mockResponse.json).toHaveBeenCalledWith({
 			error: "ID inválido",

@@ -4,27 +4,157 @@ import { UserController } from "../controllers/userController";
 const router = express.Router();
 const controller = new UserController();
 
-// Rota de boas-vindas
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: Retorna mensagem de boas-vindas
+ *     responses:
+ *       200:
+ *         description: Sucesso
+ */
 router.get("/", controller.getWelcome);
 
-// Rota para listar usuários
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Lista usuários com filtros
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Nome do usuário
+ *       - in: query
+ *         name: age
+ *         schema:
+ *           type: integer
+ *         description: Idade do usuário
+ *     responses:
+ *       200:
+ *         description: Sucesso
+ */
 router.get("/users", controller.getUsers);
 
-// Rota para buscar usuário por ID
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Busca usuário por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Sucesso
+ */
 router.get("/users/:id", controller.getUserById);
 
-// Rota para criar um novo usuário
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Cria um novo usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Usuário criado
+ */
 router.post("/users", controller.createUser);
-// Rota para atualizar um usuário por ID
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Atualiza um usuário por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               age:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Usuário atualizado
+ */
 router.put("/users/:id", controller.updateUser);
 
-// Rota para deletar um usuário por ID
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Deleta um usuário por ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário deletado
+ */
 router.delete("/users/:id", controller.deleteUser);
 
-// Rota para autenticar um usuário
+/**
+ * @swagger
+ * /auth:
+ *   post:
+ *     summary: Autentica um usuário
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Autenticação bem-sucedida
+ */
 router.post("/auth", controller.authenticateUser);
 
-// Rota para obter o perfil do usuário logado
+/**
+ * @swagger
+ * /profile:
+ *   get:
+ *     summary: Obtém o perfil do usuário logado
+ *     responses:
+ *       200:
+ *         description: Perfil do usuário
+ */
 router.get("/profile", controller.getProfile);
 
 export default router;

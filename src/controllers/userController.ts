@@ -57,7 +57,7 @@ export class UserController {
 	// Controlador para obter o perfil do usuário logado
 	public getProfile(req: Request, res: Response): void {
 		// Exemplo fictício de perfil
-		const userProfile = { id: 1, name: "Daniel", age: 30 };
+		const userProfile = { id: 1, name: "Daniel", age: 28 };
 		res
 			.status(200)
 			.json({ message: "Perfil do usuário", profile: userProfile });

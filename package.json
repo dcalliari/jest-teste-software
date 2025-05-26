@@ -9,7 +9,6 @@
 		"test": "jest",
 		"test:unit": "jest --testPathPattern=unit",
 		"test:integration": "jest --testPathPattern=integration",
-		"test:performance": "k6 run test-performance.js",
 		"test:performance:products": "k6 run src/tests/performance/product-search.performance.js",
 		"test:performance:checkout": "k6 run src/tests/performance/checkout-load.performance.js",
 		"test:performance:stress": "k6 run src/tests/performance/stress-test.performance.js"

@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 
-// Middleware para tratar erros de rotas não encontradas
+// Middleware to handle 404 Not Found errors
 export const notFound = (
 	req: Request,
 	res: Response,
@@ -9,7 +9,7 @@ export const notFound = (
 	res.status(404).json({ error: "Rota não encontrada" });
 };
 
-// Middleware para tratar erros gerais
+// Middleware to handle internal server errors
 export const errorHandler = (
 	err: Error,
 	req: Request,

@@ -1,21 +1,22 @@
 {
-	"name": "jest-teste-software",
+	"name": "shopfast-performance-testing",
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
 		"dev": "ts-node src/server.ts",
 		"build": "tsc",
 		"start": "node dist/server.js",
-		"test": "jest"
+		"test": "jest",
+		"test:unit": "jest --testPathPattern=unit",
+		"test:integration": "jest --testPathPattern=integration",
+		"test:performance": "k6 run src/tests/performance/",
+		"test:performance:products": "k6 run src/tests/performance/product-search.performance.js",
+		"test:performance:checkout": "k6 run src/tests/performance/checkout-load.performance.js",
+		"test:performance:stress": "k6 run src/tests/performance/stress-test.performance.js"
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"description": "",
 	"dependencies": {
-		"express": "^4.21.2",
-		"swagger-jsdoc": "^6.2.8",
-		"swagger-ui-express": "^5.0.1"
+		"axios": "^1.9.0",
+		"express": "^4.21.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -24,8 +25,6 @@
 		"@types/jest": "^29.5.14",
 		"@types/node": "^22.13.14",
 		"@types/supertest": "^6.0.3",
-		"@types/swagger-jsdoc": "^6.0.4",
-		"@types/swagger-ui-express": "^4.1.8",
 		"jest": "^29.7.0",
 		"supertest": "^7.1.0",
 		"ts-jest": "^29.3.0",

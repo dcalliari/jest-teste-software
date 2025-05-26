@@ -280,12 +280,12 @@ export function handleSummary(data) {
 		: 0;
 
 	return {
-		"performance-results/checkout-load-summary.json": JSON.stringify(
+		"performance/results/checkout-load-summary.json": JSON.stringify(
 			data,
 			null,
 			2,
 		),
-		"performance-results/checkout-load-summary.html": `
+		"performance/results/checkout-load-summary.html": `
 <!DOCTYPE html>
 <html>
 <head>

@@ -236,12 +236,12 @@ export function handleSummary(data) {
 	}
 
 	return {
-		"performance-results/stress-test-summary.json": JSON.stringify(
+		"performance/results/stress-test-summary.json": JSON.stringify(
 			data,
 			null,
 			2,
 		),
-		"performance-results/stress-test-summary.html": `
+		"performance/results/stress-test-summary.html": `
 <!DOCTYPE html>
 <html>
 <head>
